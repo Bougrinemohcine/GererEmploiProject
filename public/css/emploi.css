@@ -1,0 +1,13 @@
+table tbody .cellule{
+    cursor: pointer;
+    width:20px;
+}
+.cellule:hover{
+   background-color: gray;
+   opacity:0.7;
+   
+}
+table tbody .active_cellule{
+    background-color: gray;
+    pointer-events: none;
+}
