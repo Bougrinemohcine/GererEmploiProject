@@ -4,6 +4,7 @@ $seances_order = ['s1', 's2', 's3', 's4'];
 $seanceorder = 's5'
 @endphp
 <x-master title="emplois_formateurs">
+    
     <div style="max-height: auto; max-width: 100vw; border-radius: 10px; padding: 10px; font-size: small;margin-top:-45px">
             <form class="d-flex" action="{{route('emploi_formateur')}}" method="get">
                 <select id="formateurSelect" name="formateur_id" class="form-select mb-3" aria-label="Default select example"  onchange="this.form.submit()">
