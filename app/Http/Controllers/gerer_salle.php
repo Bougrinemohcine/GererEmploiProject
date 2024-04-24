@@ -49,8 +49,9 @@ class gerer_salle extends Controller
             $id_emploi =$derniereEmploi->id;
         }
         $salles = salle::all();
+        $groupes = groupe::all();
         $seances = seance::where('id_emploi', $id_emploi)
                             ->get();
-        return view('salles',compact('salles','seances'));
+        return view('salles',compact('salles','seances','groupes'));
     }
 }
