@@ -27,41 +27,48 @@
             </tr>
             <!-- Loop through the days -->
             @foreach($jours as $jour)
-            <!-- Loop through the groups -->
+                <!-- Loop through the rooms -->
                 @php
-                $sallesCount = count($salles) ;
-                $firstsalles = $salles->first();
+                    $sallesCount = count($salles);
+                    $firstsalles = $salles->first();
                 @endphp
                 @foreach($salles as $salle)
-
                     <tr>
-                        <!-- For the first group of each day, add the rowspan for the day cell -->
-                        @if($salle->id === $firstsalles->id)
-                        <td rowspan="{{ $sallesCount }}" class="border border-dark bg-grey text-black border-4">{{ $jour }}</td>
+                        <!-- For the first room of each day, add the rowspan for the room cell -->
+                        @if($salle->id === $firstsalles->id && $loop->first)
+                            <td rowspan="{{ $sallesCount }}" class="border border-dark bg-grey text-black border-4">{{ $jour }}</td>
                         @endif
                         <td rowspan="1" class="border border-dark bg-grey text-black border-4">{{ $salle['nom_salle'] }}</td>
 
-                            @foreach ($seances_order as $seance_order)
-                                                @php
-                                                    $seance = $seances->first(function($item) use ($jour, $seance_order, $salle) {
-                                                        return $item->day === $jour  && $item->order_seance === $seance_order && $item->id_salle == $salle->id;
-                                                    });
-                                                @endphp
-                                                @if($seance)
-                                                <td class=" v cellule text-black border border-dark" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" >
-                                                    <span>{{ $seance->formateur->name }} </span>
-                                                </td>
-                                                @else
-                                                    <td class=" v cellule text-black border border-dark {{  $loop->parent->last? 'd' : '' }}"  style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" >
+                        @foreach ($seances_order as $seance_order)
+                            @php
+                                $seances_filtered = $seances->filter(function($item) use ($jour, $seance_order, $salle) {
+                                    return $item->day === $jour && $item->order_seance === $seance_order && $item->id_salle == $salle->id;
+                                });
+                            @endphp
 
-                                                    </td>
-                                                @endif
-                            @endforeach
-
+                            <!-- Check if there are sessions for the current criteria -->
+                            @if ($seances_filtered->isNotEmpty())
+                                <!-- Get the first session to display formateur and groups -->
+                                @php
+                                    $seance = $seances_filtered->first();
+                                @endphp
+                                <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;">
+                                    <span>{{ $seance->formateur->name }}</span> <br>
+                                    @foreach ($seances_filtered as $seance_group)
+                                        <span>{{ $seance_group->groupe->nom_groupe }} </span>
+                                    @endforeach
+                                </td>
+                            @else
+                                <!-- If no sessions for the current criteria, display empty cell -->
+                                <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;"></td>
+                            @endif
+                        @endforeach
                     </tr>
                 @endforeach
             @endforeach
         </table>
+
     </div>
 
     <div id="cdsTable" style="display: none;">
@@ -90,21 +97,28 @@
                         @endif
                         <td rowspan="1" class="border border-dark bg-grey text-black border-4">{{ $salle['nom_salle'] }}</td>
 
-                                                @php
-                                                    $seance = $seances->first(function($item) use ($jour, $seanceorder, $salle) {
-                                                        return $item->day === $jour  && $item->order_seance === $seanceorder && $item->id_salle == $salle->id;
-                                                    });
-                                                @endphp
+                        @php
+                            $seances_filtered = $seances->filter(function($item) use ($jour, $seanceorder, $salle) {
+                                return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_salle == $salle->id;
+                            });
+                        @endphp
 
-                                                @if($seance)
-                                                <td class=" v cellule text-black border border-dark" style="background-color: white; text-align:center;">
-                                                    <span>{{ $seance->formateur->name }} </span>
-                                                </td>
-                                                @else
-                                                <td class=" v cellule text-black border border-dark {{ $loop->last && $salle->id === $sallesCount - 1 ? 'd' : '' }}" style="background-color: white; text-align:center;">
-                                                </td>
-                                                @endif
-                        <!-- Add cells for s2, s3, and s4 -->
+                        <!-- Check if there are sessions for the current criteria -->
+                        @if ($seances_filtered->isNotEmpty())
+                            <!-- Get the first session to display formateur and groups -->
+                            @php
+                                $seance = $seances_filtered->first();
+                            @endphp
+                            <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;">
+                                <span>{{ $seance->formateur->name }}</span> <br>
+                                @foreach ($seances_filtered as $seance_group)
+                                    <span>{{ $seance_group->groupe->nom_groupe }} </span>
+                                @endforeach
+                            </td>
+                        @else
+                            <!-- If no sessions for the current criteria, display empty cell -->
+                            <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;"></td>
+                        @endif
                     </tr>
                 @endforeach
             @endforeach
