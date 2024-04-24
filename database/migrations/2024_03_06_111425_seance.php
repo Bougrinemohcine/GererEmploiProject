@@ -15,9 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('day',['lundi', 'mardi','mercredi','jeudi','vendredi','samedi']);
             $table->enum('partie_jour', ['Matin', 'A.Midi']);
-            $table->enum('order_seance', ['s1', 's2','s3','s4']);
-            $table->date('date_debut');
-            $table->date('date_fin');
+            $table->enum('order_seance', ['s1', 's2','s3','s4','s5']);
             $table->unsignedBigInteger('id_salle');
             $table->unsignedBigInteger('id_formateur');
             $table->unsignedBigInteger('id_groupe');
