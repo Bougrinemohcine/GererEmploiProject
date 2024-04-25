@@ -1,0 +1,54 @@
+Sub AddFormattingAndPicToCDJAndCDSSheets()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastCol As Long
+    Dim myPicture As Variant
+    Dim p As Object
+    
+    ' Add picture to all sheets
+    myPicture = Application.GetOpenFilename("Pictures (*.gif;*.jpg;*.bmp;*.tif),*.gif;*.jpg;*.bmp;*.tif", , "Select Picture to Import")
+    If myPicture = False Then Exit Sub
+    
+    For Each ws In ThisWorkbook.Sheets
+        ws.Activate
+        Set p = ws.Pictures.Insert(myPicture)
+        With p
+            .Left = ws.Range("A1").Left
+            .Top = ws.Range("A1").Top
+            .Width = 50 ' Adjust as needed
+            .Height = 50 ' Adjust as needed
+        End With
+        
+        ' Add formatting to CDJ and CDS sheets
+        If Right(ws.Name, 3) = "CDJ" Or Right(ws.Name, 3) = "CDS" Then
+            lastRow = ws.Cells(ws.Rows.Count, "B").End(xlUp).Row
+            lastCol = ws.Cells(10, ws.Columns.Count).End(xlToLeft).Column
+            If Right(ws.Name, 3) = "CDJ" Then
+                ' Format range C1:F2
+                With ws.Range("C1:F2")
+                    .HorizontalAlignment = xlCenter
+                    .Font.Bold = True
+                End With
+                ' Add borders to range A10:FlastRow
+                With ws.Range("A10:F" & lastRow)
+                    .Borders.LineStyle = xlContinuous
+                    .Borders.Weight = xlThin
+                    .HorizontalAlignment = xlCenter
+                End With
+            ElseIf Right(ws.Name, 3) = "CDS" Then
+                ' Format range B1:C2
+                With ws.Range("B1:C2")
+                    .HorizontalAlignment = xlCenter
+                    .Font.Bold = True
+                End With
+                ' Add borders to range A10:CLastRow
+                With ws.Range("A10:C" & lastRow)
+                    .Borders.LineStyle = xlContinuous
+                    .Borders.Weight = xlThin
+                    .HorizontalAlignment = xlCenter
+                End With
+            End If
+        End If
+    Next ws
+End Sub
+

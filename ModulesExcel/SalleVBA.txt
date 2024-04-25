@@ -1,0 +1,16 @@
+Sub ApplyFormatting()
+       Dim ws As Worksheet
+       For Each ws In ThisWorkbook.Sheets
+           If ws.Name = "CDJ" Then
+               ws.Range("A1:F20").Borders.LineStyle = xlContinuous
+               ws.Range("A1:F20").Borders.Weight = xlThin
+               ws.Range("A1:F20").Borders.ColorIndex = xlAutomatic
+               ws.Range("A1:F20").WrapText = True
+           ElseIf ws.Name = "CDS" Then
+               ws.Range("A1:C20").Borders.LineStyle = xlContinuous
+               ws.Range("A1:C20").Borders.Weight = xlThin
+               ws.Range("A1:C20").Borders.ColorIndex = xlAutomatic
+               ws.Range("A1:C20").WrapText = True
+           End If
+       Next ws
+   End Sub

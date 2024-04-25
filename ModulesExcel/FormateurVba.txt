@@ -1,0 +1,99 @@
+Sub FormatRangesAndAddPic()
+    Dim ws As Worksheet
+    Dim rngCDJ As Range
+    Dim rngCDS As Range
+    Dim rngCDJHeader As Range
+    Dim rngCDJSubheader As Range
+    Dim rngCDSHeader As Range
+    Dim myPicture As Variant
+    Dim p As Object
+
+    ' Add picture to the first sheet only
+    myPicture = Application.GetOpenFilename("Pictures (*.gif;*.jpg;*.bmp;*.tif),*.gif;*.jpg;*.bmp;*.tif", , "Select Picture to Import")
+    If myPicture = False Then Exit Sub
+    
+    ' Loop through each sheet in the workbook
+    For Each ws In ThisWorkbook.Sheets
+        ' Check if the sheet name ends with "CDJ"
+        If Right(ws.Name, 3) = "CDJ" Then
+            ' Set the range to include cells A10:F29
+            Set rngCDJ = ws.Range("A10:F29")
+            
+            ' Add borders to the range
+            With rngCDJ.Borders
+                .LineStyle = xlContinuous
+                .ColorIndex = 0
+                .Weight = xlThin
+            End With
+            
+            ' Center the elements in the range
+            rngCDJ.HorizontalAlignment = xlCenter
+            
+            ' Set the range for the header (C1:F1)
+            Set rngCDJHeader = ws.Range("C1:F1")
+            
+            ' Set the range for the subheader (C2:F2)
+            Set rngCDJSubheader = ws.Range("C2:F2")
+            
+            ' Center and bold the header
+            With rngCDJHeader
+                .HorizontalAlignment = xlCenter
+                .Font.Bold = True
+            End With
+            
+            ' Center and bold the subheader
+            With rngCDJSubheader
+                .HorizontalAlignment = xlCenter
+                .Font.Bold = True
+            End With
+            
+            ' Add borders to the additional range A31:F32
+            With ws.Range("A31:F32").Borders
+                .LineStyle = xlContinuous
+                .ColorIndex = 0
+                .Weight = xlThin
+            End With
+            
+        ElseIf Right(ws.Name, 3) = "CDS" Then
+            ' Set the range to include cells A10:C29
+            Set rngCDS = ws.Range("A10:C29")
+            
+            ' Add borders to the range
+            With rngCDS.Borders
+                .LineStyle = xlContinuous
+                .ColorIndex = 0
+                .Weight = xlThin
+            End With
+            
+            ' Center the elements in the range
+            rngCDS.HorizontalAlignment = xlCenter
+            
+            ' Set the range for the header (B1:C2)
+            Set rngCDSHeader = ws.Range("B1:C2")
+            
+            ' Center and bold the header
+            With rngCDSHeader
+                .HorizontalAlignment = xlCenter
+                .Font.Bold = True
+            End With
+            
+            ' Add borders to the additional range A31:C32
+            With ws.Range("A31:C32").Borders
+                .LineStyle = xlContinuous
+                .ColorIndex = 0
+                .Weight = xlThin
+            End With
+        End If
+    Next ws
+
+    ' Add the picture to each sheet
+    For Each ws In ThisWorkbook.Sheets
+        Set p = ws.Pictures.Insert(myPicture)
+        With p
+            .Left = ws.Range("A1").Left
+            .Top = ws.Range("A1").Top
+            .Width = 50 ' Adjust as needed
+            .Height = 50 ' Adjust as needed
+        End With
+    Next ws
+End Sub
