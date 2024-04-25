@@ -13,7 +13,7 @@
 
     <!-- Wrap each table with a div and give them unique IDs -->
     <div id="cdjTable" style="display: none;">
-        <table class="table border border-dark border-4">
+        <table id="salleCDJ" class="table border border-dark border-4">
             <!-- CDJ Table content -->
             <tr>
                 <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
@@ -72,7 +72,7 @@
     </div>
 
     <div id="cdsTable" style="display: none;">
-        <table class="table border border-dark border-4">
+        <table id="salleCDS" class="table border border-dark border-4">
             <!-- CDS Table content -->
             <tr>
                 <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
@@ -125,6 +125,9 @@
         </table>
     </div>
 
+    <button class="btn btn-success" onclick="ExportToExcel('xlsx')">Export to excel</button>
+
+
     <!-- Your PHP and HTML code continues... -->
 
 </x-master>
@@ -152,4 +155,22 @@
             }
         });
     });
+    function ExportToExcel(type, fn, dl) {
+       var wb = XLSX.utils.book_new();
+
+       // CDJ Table export
+       var cdjTable = document.getElementById('salleCDJ');
+       var cdjWS = XLSX.utils.table_to_sheet(cdjTable);
+       XLSX.utils.book_append_sheet(wb, cdjWS, "CDJ");
+
+       // CDS Table export
+       var cdsTable = document.getElementById('salleCDS');
+       var cdsWS = XLSX.utils.table_to_sheet(cdsTable);
+       XLSX.utils.book_append_sheet(wb, cdsWS, "CDS");
+
+       // Save or download
+       return dl ?
+         XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+         XLSX.writeFile(wb, fn || ('Salles.' + (type || 'xlsx')));
+    }
 </script>
