@@ -278,242 +278,60 @@
                     @endforeach
                 @endforeach
         <!-- emplois formateur -->
-            @foreach ($formateurs as $formateur)
-                <h3>Emploi : CDJ</h3>
-                <h6>{{$formateur->name}}</h6>
-                <table id="tableCDJ_{{$formateur->id}}" class="table border border-dark border-4">
-                    <tr>
-                        <td  colspan="2"></td>
-                        <td colspan="4">EMPLOI DU TEMPS DU FORMATEUR FACE A FACE : Stagiaire</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                        <td colspan="4">Au titre de l'année 2024 - 2025</td>
-                    </tr>
-                    <tr>
-                        <td colspan="6"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="1">DRGC</td>
-                        <td colspan="5"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">Complexe/EFP : ITA MY RACHID</td>
-                        <td colspan="3"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Fomateur : {{$formateur->name}}</td>
-                        <td colspan="2">Statutaire : </td>
-                        <td colspan="2">Mle:15615</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Filière :
-                            @foreach ($formateurFiliere->where('formateur_id', $formateur->id) as $index => $ff)
-                                <span>{{ $ff->filiere->nom_filier }}</span>/
-                            @endforeach
-                        </td>
-
-                        <td colspan="2">Coopérant : </td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">Niveau :
-                            @foreach ($formateurFiliere->where('formateur_id', $formateur->id) as $index => $ff)
-                                <span>{{ $ff->filiere->niveau_formation }}</span>
-                                /
-                            @endforeach
-                        </td>
-                        <td colspan="2">Vacataire : </td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        @php
-                            $seancesGrouped = \App\Models\Seance::where('id_emploi', $id_emploi)
-                                ->where('id_formateur', $formateur->id)
-                                ->whereHas('groupe', function ($query) {
-                                    $query->where('Mode_de_formation', 'CDJ');
-                                })
-                                ->groupBy(['order_seance', 'day'])
-                                ->selectRaw('order_seance, day, count(*) as seances_count')
-                                ->get();
-
-                                $countMH = 0;
-                            foreach ($seancesGrouped as $group) {
-                                $countMH += 1;
-                            }
-                            $MH = $countMH * 2.5;
-                        @endphp
-                        <td colspan="2">Masse Horaire: {{$MH}} H</td>
-
-                        <td colspan="2">Contrat de service </td>
-                        <td colspan="2">Période d'application : ({{ $derniereEmploi->date_debu }})</td>
-                    </tr>
-                    <!-- Table header -->
-                    <tr>
-                        <th class="text-black border-4" style="text-align:center" colspan="2">Heure</th>
-                        @foreach ($seances_order as $seance_order)
-                            <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seance_order}}</th>
-                        @endforeach
-                    </tr>
-                    <tr class="border-4">
-                        <th style="text-align:center" class="border border-dark bg-grey text-black border-4">Jour</th>
-                    </tr>
-                    <!-- Table body -->
-                    @foreach ($jours as $jour)
+                @foreach ($formateurs as $formateur)
+                    <h3>Emploi : CDJ</h3>
+                    <h6>{{$formateur->name}}</h6>
+                    <table id="tableCDJ_{{$formateur->id}}" class="table border border-dark border-4">
                         <tr>
-                            <th rowspan="3" class="border border-dark bg-grey text-black border-4">{{$jour}}</th>
-                            <th class="s border-end border-start border-bottom-0 border-dark bg-grey text-black border-4">Groupe</th>
-                            @foreach ($seances_order as $seance_order)
-                                @php
-                                    $seance = $seances->first(function($item) use ($jour, $seance_order, $formateur) {
-                                        return $item->day === $jour && $item->order_seance === $seance_order && $item->id_formateur == $formateur->id;
-                                    });
-                                    $modalId_update = $jour . $seance_order . $formateur->id . "_update";
-                                    $modalId_ajouter = $jour . $seance_order . $formateur->id . "_ajouter";
-                                @endphp
-                                @if ($seance)
-                                    <td class="cellule border-end border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_update}}">
-                                        @php $displayedGroups = []; @endphp <!-- Initialize an array to keep track of displayed groups -->
-                                        @foreach($groupes as $formateurGroupe)
-                                            @php
-                                                $groupe_deja_occupee = $formateurGroupe->groupe->seances
-                                                    ->where('id_emploi', $id_emploi)
-                                                    ->where('day', $jour)
-                                                    ->where('order_seance', $seance_order)
-                                                    ->where('id_formateur', $formateur->id);
-                                            @endphp
-                                            @if ($groupe_deja_occupee->isNotEmpty() && !in_array($formateurGroupe->groupe->nom_groupe, $displayedGroups))
-                                                <span>{{ $formateurGroupe->groupe->nom_groupe }}</span>
-                                                @php $displayedGroups[] = $formateurGroupe->groupe->nom_groupe; @endphp <!-- Add displayed group to array -->
-                                            @endif
-                                        @endforeach
-                                        @if ($seance->type_seance == 'team')
-                                            <span>FAD</span>
-                                        @endif
-                                    </td>
-                                @else
-                                    <td class="cellule border-end border-start border-bottom-0 border-dark bg-grey text-black border-4" id="#{{$modalId_ajouter}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_ajouter}}">
-                                    </td>
-                                @endif
-                            @endforeach
+                            <td  colspan="2"></td>
+                            <td colspan="4">EMPLOI DU TEMPS DU FORMATEUR FACE A FACE : Stagiaire</td>
                         </tr>
                         <tr>
-                            <th class="s border border-top-0 border-bottom-0 border-dark bg-grey text-black border-4">Module</th>
-                            @foreach ($seances_order as $seance_order)
-                                @php
-                                    $seance = $seances->first(function($item) use ($jour, $seance_order, $formateur) {
-                                        return $item->day === $jour && $item->order_seance === $seance_order && $item->id_formateur == $formateur->id;
-                                    });
-                                    $modalId_update = $jour . $seance_order . $formateur->id . "_update";
-                                    $modalId_ajouter = $jour . $seance_order . $formateur->id . "_ajouter";
-                                @endphp
-                                @if (isset($seance))
-                                    <td class="cellule border border-dark bg-grey text-black" id="#{{ $modalId_update }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_update }}">
-                                        @if ($seance->module_id)
-                                            <span class="border border-dark bg-grey text-black">{{ $seance->module->intitule }}</span>
-                                        @else
-                                            <span>M</span>
-                                        @endif
-                                        {{-- <span>{{ $seance->type_seance }}</span> --}}
-                                    </td>
-                                @else
-                                    <td class="cellule border-end border-start border-top-0 border-bottom-0 border-dark bg-grey text-black border-4" id="#{{ $modalId_ajouter }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_ajouter }}">
-                                    </td>
-                                @endif
-                            @endforeach
+                            <td colspan="2"></td>
+                            <td colspan="4">Au titre de l'année 2024 - 2025</td>
                         </tr>
-                        <tr>
-                            <th class="border-end border-start border-top-0 border-bottom-0 border-dark bg-grey text-black border-4">Salle</th>
-                            @foreach ($seances_order as $seance_order)
-                                @php
-                                    $seance = $seances->first(function($item) use ($jour, $seance_order, $formateur) {
-                                        return $item->day === $jour && $item->order_seance === $seance_order && $item->id_formateur == $formateur->id;
-                                    });
-                                    $modalId_update = $jour . $seance_order . $formateur->id . "_update";
-                                    $modalId_ajouter = $jour . $seance_order . $formateur->id . "_ajouter";
-                                @endphp
-                                @if($seance)
-                                    <td class="cellule border border-dark bg-grey text-black" id="#{{ $modalId_update }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_update }}">
-                                        <td class="cellule border border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;border-right:4px solid #344767 !important;border-bottom:4px solid #344767 !important" data-toggle="modal" data-target="#{{$modalId_update}}">
-                                            @if ($seance->salle)
-                                                <span>{{ $seance->salle->nom_salle }}</span>
-                                            @else
-                                                <span>SALLE</span>
-                                            @endif
-                                        </td>                                    </td>
-                                @else
-                                    <td class="cellule border-end border-start border-top-0 border-dark bg-grey text-black border-4" id="#{{ $modalId_ajouter }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_ajouter }}">
-                                    </td>
-                                @endif
-                            @endforeach
-                        </tr>
-                        <!-- Remaining table rows -->
-                    @endforeach
                         <tr>
                             <td colspan="6"></td>
                         </tr>
                         <tr>
-                            <td colspan="2">Formateur</td>
-                            <td colspan="2">Directeur / Directeur Pédagogique</td>
-                            <td colspan="2">Directeur du Complexe</td>
+                            <td colspan="1">DRGC</td>
+                            <td colspan="5"></td>
                         </tr>
                         <tr>
-                            <td colspan="2"></td>
-                            <td colspan="2"></td>
-                            <td colspan="2"></td>
-                        </tr>
-                </table>
-                @if($formateur->CDS == 'oui')
-                    <h3>Emploi : CDS</h3>
-                    <table id="tableCDS_{{$formateur->id}}" class="table border border-dark  border-4">
-                        <tr>
-                            <td  colspan="1"></td>
-                            <td colspan="2">EMPLOI DU TEMPS DU FORMATEUR FACE A FACE : Stagiaire</td>
-                        </tr>
-                        <tr>
-                            <td colspan="1"></td>
-                            <td colspan="2">Au titre de l'année 2024 - 2025</td>
-                        </tr>
-                        <tr>
+                            <td colspan="3">Complexe/EFP : ITA MY RACHID</td>
                             <td colspan="3"></td>
                         </tr>
                         <tr>
-                            <td colspan="1">DRGC</td>
+                            <td colspan="2">Fomateur : {{$formateur->name}}</td>
+                            <td colspan="2">Statutaire : </td>
+                            <td colspan="2">Mle:15615</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">Filière :
+                                @foreach ($formateurFiliere->where('formateur_id', $formateur->id) as $index => $ff)
+                                    <span>{{ $ff->filiere->nom_filier }}</span>/
+                                @endforeach
+                            </td>
+
+                            <td colspan="2">Coopérant : </td>
                             <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="2">Complexe/EFP : ITA MY RACHID</td>
-                            <td colspan="1"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="1">Fomateur : {{$formateur->name}}</td>
-                            <td colspan="1">Statutaire : </td>
-                            <td colspan="1">Mle:15615</td>
-                        </tr>
-                        <tr>
-                            <td colspan="1">Filière :
+                            <td colspan="2">Niveau :
                                 @foreach ($formateurFiliere->where('formateur_id', $formateur->id) as $index => $ff)
-                                    <span>{{$ff->filiere->nom_filier}}</span>/
+                                    <span>{{ $ff->filiere->niveau_formation }}</span>
+                                    /
                                 @endforeach
                             </td>
-                            <td colspan="1">Coopérant : </td>
-                            <td colspan="1"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="1">Niveau :
-                                @foreach ($formateurFiliere->where('formateur_id', $formateur->id) as $index => $ff)
-                                    <span>{{ $ff->filiere->niveau_formation }}</span>/
-                                @endforeach
-                            </td>
-                            <td colspan="1">Vacataire : </td>
-                            <td colspan="1"></td>
+                            <td colspan="2">Vacataire : </td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
                             @php
                                 $seancesGrouped = \App\Models\Seance::where('id_emploi', $id_emploi)
                                     ->where('id_formateur', $formateur->id)
                                     ->whereHas('groupe', function ($query) {
-                                        $query->where('Mode_de_formation', 'CDS');
+                                        $query->where('Mode_de_formation', 'CDJ');
                                     })
                                     ->groupBy(['order_seance', 'day'])
                                     ->selectRaw('order_seance, day, count(*) as seances_count')
@@ -525,29 +343,35 @@
                                 }
                                 $MH = $countMH * 2.5;
                             @endphp
-                            <td colspan="1">Masse Horaire : {{$MH}} H</td>
-                            <td colspan="1">Contrat de service </td>
-                            <td colspan="1">Période d'application : ({{$derniereEmploi->date_debu}})</td>
+                            <td colspan="2">Masse Horaire: {{$MH}} H</td>
+
+                            <td colspan="2">Contrat de service </td>
+                            <td colspan="2">Période d'application : ({{ $derniereEmploi->date_debu }})</td>
                         </tr>
+                        <!-- Table header -->
                         <tr>
-                            <th class="text-black border-4" style="text-align:center" colspan="2" >Heure</th>
-                            <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{ $seanceorder }}</th>
+                            <th class="text-black border-4" style="text-align:center" colspan="2">Heure</th>
+                            @foreach ($seances_order as $seance_order)
+                                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seance_order}}</th>
+                            @endforeach
                         </tr>
                         <tr class="border-4">
-                            <th style="text-align:center"  class="border border-dark bg-grey text-black border-4">Jour</th>
+                            <th style="text-align:center" class="border border-dark bg-grey text-black border-4">Jour</th>
                         </tr>
+                        <!-- Table body -->
                         @foreach ($jours as $jour)
-                            <tr >
-                                <th rowspan="3" class="border border-dark bg-grey text-black border-4">{{ $jour }}</th>
-                                <th class="s border-end boredr-start border-bottom-0 border-dark bg-grey text-black border-4">Groupe</th>
+                            <tr>
+                                <th rowspan="3" class="border border-dark bg-grey text-black border-4">{{$jour}}</th>
+                                <th class="s border-end border-start border-bottom-0 border-dark bg-grey text-black border-4">Groupe</th>
+                                @foreach ($seances_order as $seance_order)
                                     @php
-                                        $seance = $seances->first(function($item) use ($jour, $seanceorder, $formateur) {
-                                            return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_formateur == $formateur->id;
+                                        $seance = $seances->first(function($item) use ($jour, $seance_order, $formateur) {
+                                            return $item->day === $jour && $item->order_seance === $seance_order && $item->id_formateur == $formateur->id;
                                         });
-                                        $modalId_update = $jour.''. $seanceorder . '' .$formateur->id.'_'."update";
-                                        $modalId_ajouter = $jour.''. $seanceorder . '' .$formateur->id.'_'."ajouter";
+                                        $modalId_update = $jour . $seance_order . $formateur->id . "_update";
+                                        $modalId_ajouter = $jour . $seance_order . $formateur->id . "_ajouter";
                                     @endphp
-                                    @if($seance)
+                                    @if ($seance)
                                         <td class="cellule border-end border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_update}}">
                                             @php $displayedGroups = []; @endphp <!-- Initialize an array to keep track of displayed groups -->
                                             @foreach($groupes as $formateurGroupe)
@@ -555,7 +379,7 @@
                                                     $groupe_deja_occupee = $formateurGroupe->groupe->seances
                                                         ->where('id_emploi', $id_emploi)
                                                         ->where('day', $jour)
-                                                        ->where('order_seance', $seanceorder)
+                                                        ->where('order_seance', $seance_order)
                                                         ->where('id_formateur', $formateur->id);
                                                 @endphp
                                                 @if ($groupe_deja_occupee->isNotEmpty() && !in_array($formateurGroupe->groupe->nom_groupe, $displayedGroups))
@@ -564,75 +388,359 @@
                                                 @endif
                                             @endforeach
                                             @if ($seance->type_seance == 'team')
-                                            <span>FAD</span>
+                                                <span>FAD</span>
                                             @endif
                                         </td>
                                     @else
                                         <td class="cellule border-end border-start border-bottom-0 border-dark bg-grey text-black border-4" id="#{{$modalId_ajouter}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_ajouter}}">
                                         </td>
                                     @endif
+                                @endforeach
                             </tr>
                             <tr>
                                 <th class="s border border-top-0 border-bottom-0 border-dark bg-grey text-black border-4">Module</th>
+                                @foreach ($seances_order as $seance_order)
                                     @php
-                                        $seance = $seances->first(function($item) use ($jour, $seanceorder, $formateur) {
-                                            return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_formateur == $formateur->id;
+                                        $seance = $seances->first(function($item) use ($jour, $seance_order, $formateur) {
+                                            return $item->day === $jour && $item->order_seance === $seance_order && $item->id_formateur == $formateur->id;
                                         });
-                                        $modalId_update = $jour.''. $seanceorder . '' .$formateur->id.'_'."update";
-                                        $modalId_ajouter = $jour.''. $seanceorder . '' .$formateur->id.'_'."ajouter";
+                                        $modalId_update = $jour . $seance_order . $formateur->id . "_update";
+                                        $modalId_ajouter = $jour . $seance_order . $formateur->id . "_ajouter";
                                     @endphp
-                                    @if($seance)
-                                        <td class="cellule border border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_update}}">
+                                    @if (isset($seance))
+                                        <td class="cellule border border-dark bg-grey text-black" id="#{{ $modalId_update }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_update }}">
                                             @if ($seance->module_id)
-                                                <span class="border border-dark bg-grey text-black">{{$seance->module->intitule}}</span>
+                                                <span class="border border-dark bg-grey text-black">{{ $seance->module->intitule }}</span>
                                             @else
                                                 <span>M</span>
                                             @endif
+                                            {{-- <span>{{ $seance->type_seance }}</span> --}}
                                         </td>
                                     @else
-                                        <td class="cellule border-end border-start border-top-0 border-bottom-0  border-dark bg-grey text-black border-4" id="#{{$modalId_ajouter}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_ajouter}}">
+                                        <td class="cellule border-end border-start border-top-0 border-bottom-0 border-dark bg-grey text-black border-4" id="#{{ $modalId_ajouter }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_ajouter }}">
                                         </td>
                                     @endif
+                                @endforeach
                             </tr>
                             <tr>
                                 <th class="border-end border-start border-top-0 border-bottom-0 border-dark bg-grey text-black border-4">Salle</th>
+                                @foreach ($seances_order as $seance_order)
                                     @php
-                                        $seance = $seances->first(function($item) use ($jour, $seanceorder, $formateur) {
-                                            return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_formateur == $formateur->id;
+                                        $seance = $seances->first(function($item) use ($jour, $seance_order, $formateur) {
+                                            return $item->day === $jour && $item->order_seance === $seance_order && $item->id_formateur == $formateur->id;
                                         });
-                                        $modalId_update = $jour.''. $seanceorder . '' .$formateur->id.'_'."update";
-                                        $modalId_ajouter = $jour.''. $seanceorder . '' .$formateur->id.'_'."ajouter";
+                                        $modalId_update = $jour . $seance_order . $formateur->id . "_update";
+                                        $modalId_ajouter = $jour . $seance_order . $formateur->id . "_ajouter";
                                     @endphp
                                     @if($seance)
-                                        <td class="cellule border border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_update}}">
-                                            @if ($seance->salle)
-                                            <span>{{ $seance->salle->nom_salle }}</span>
-                                            @else
-                                                <span>SALLE</span>
-                                            @endif                                        </td>
+                                        <td class="cellule border border-dark bg-grey text-black" id="#{{ $modalId_update }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_update }}">
+                                            <td class="cellule border border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;border-right:4px solid #344767 !important;border-bottom:4px solid #344767 !important" data-toggle="modal" data-target="#{{$modalId_update}}">
+                                                @if ($seance->salle)
+                                                    <span>{{ $seance->salle->nom_salle }}</span>
+                                                @else
+                                                    <span>SALLE</span>
+                                                @endif
+                                            </td>                                    </td>
                                     @else
-                                        <td class="cellule border-end boredr-start border-top-0 border-dark bg-grey text-black border-4" id="#{{$modalId_ajouter}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_ajouter}}">
+                                        <td class="cellule border-end border-start border-top-0 border-dark bg-grey text-black border-4" id="#{{ $modalId_ajouter }}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{ $modalId_ajouter }}">
                                         </td>
                                     @endif
+                                @endforeach
                             </tr>
+                            <!-- Remaining table rows -->
                         @endforeach
-                        <tr>
-                            <td colspan="3"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="1">Formateur</td>
-                            <td colspan="1">Directeur / Directeur Pédagogique</td>
-                            <td colspan="1">Directeur du Complexe</td>
-                        </tr>
-                        <tr>
-                            <td colspan="1"></td>
-                            <td colspan="1"></td>
-                            <td colspan="1"></td>
-                        </tr>
+                            <tr>
+                                <td colspan="6"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Formateur</td>
+                                <td colspan="2">Directeur / Directeur Pédagogique</td>
+                                <td colspan="2">Directeur du Complexe</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td colspan="2"></td>
+                                <td colspan="2"></td>
+                            </tr>
                     </table>
-                @endif
-            @endforeach
-        </div>
+                    @if($formateur->CDS == 'oui')
+                        <h3>Emploi : CDS</h3>
+                        <table id="tableCDS_{{$formateur->id}}" class="table border border-dark  border-4">
+                            <tr>
+                                <td  colspan="1"></td>
+                                <td colspan="2">EMPLOI DU TEMPS DU FORMATEUR FACE A FACE : Stagiaire</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"></td>
+                                <td colspan="2">Au titre de l'année 2024 - 2025</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">DRGC</td>
+                                <td colspan="2"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Complexe/EFP : ITA MY RACHID</td>
+                                <td colspan="1"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">Fomateur : {{$formateur->name}}</td>
+                                <td colspan="1">Statutaire : </td>
+                                <td colspan="1">Mle:15615</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">Filière :
+                                    @foreach ($formateurFiliere->where('formateur_id', $formateur->id) as $index => $ff)
+                                        <span>{{$ff->filiere->nom_filier}}</span>/
+                                    @endforeach
+                                </td>
+                                <td colspan="1">Coopérant : </td>
+                                <td colspan="1"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">Niveau :
+                                    @foreach ($formateurFiliere->where('formateur_id', $formateur->id) as $index => $ff)
+                                        <span>{{ $ff->filiere->niveau_formation }}</span>/
+                                    @endforeach
+                                </td>
+                                <td colspan="1">Vacataire : </td>
+                                <td colspan="1"></td>
+                            </tr>
+                            <tr>
+                                @php
+                                    $seancesGrouped = \App\Models\Seance::where('id_emploi', $id_emploi)
+                                        ->where('id_formateur', $formateur->id)
+                                        ->whereHas('groupe', function ($query) {
+                                            $query->where('Mode_de_formation', 'CDS');
+                                        })
+                                        ->groupBy(['order_seance', 'day'])
+                                        ->selectRaw('order_seance, day, count(*) as seances_count')
+                                        ->get();
+
+                                        $countMH = 0;
+                                    foreach ($seancesGrouped as $group) {
+                                        $countMH += 1;
+                                    }
+                                    $MH = $countMH * 2.5;
+                                @endphp
+                                <td colspan="1">Masse Horaire : {{$MH}} H</td>
+                                <td colspan="1">Contrat de service </td>
+                                <td colspan="1">Période d'application : ({{$derniereEmploi->date_debu}})</td>
+                            </tr>
+                            <tr>
+                                <th class="text-black border-4" style="text-align:center" colspan="2" >Heure</th>
+                                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{ $seanceorder }}</th>
+                            </tr>
+                            <tr class="border-4">
+                                <th style="text-align:center"  class="border border-dark bg-grey text-black border-4">Jour</th>
+                            </tr>
+                            @foreach ($jours as $jour)
+                                <tr >
+                                    <th rowspan="3" class="border border-dark bg-grey text-black border-4">{{ $jour }}</th>
+                                    <th class="s border-end boredr-start border-bottom-0 border-dark bg-grey text-black border-4">Groupe</th>
+                                        @php
+                                            $seance = $seances->first(function($item) use ($jour, $seanceorder, $formateur) {
+                                                return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_formateur == $formateur->id;
+                                            });
+                                            $modalId_update = $jour.''. $seanceorder . '' .$formateur->id.'_'."update";
+                                            $modalId_ajouter = $jour.''. $seanceorder . '' .$formateur->id.'_'."ajouter";
+                                        @endphp
+                                        @if($seance)
+                                            <td class="cellule border-end border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_update}}">
+                                                @php $displayedGroups = []; @endphp <!-- Initialize an array to keep track of displayed groups -->
+                                                @foreach($groupes as $formateurGroupe)
+                                                    @php
+                                                        $groupe_deja_occupee = $formateurGroupe->groupe->seances
+                                                            ->where('id_emploi', $id_emploi)
+                                                            ->where('day', $jour)
+                                                            ->where('order_seance', $seanceorder)
+                                                            ->where('id_formateur', $formateur->id);
+                                                    @endphp
+                                                    @if ($groupe_deja_occupee->isNotEmpty() && !in_array($formateurGroupe->groupe->nom_groupe, $displayedGroups))
+                                                        <span>{{ $formateurGroupe->groupe->nom_groupe }}</span>
+                                                        @php $displayedGroups[] = $formateurGroupe->groupe->nom_groupe; @endphp <!-- Add displayed group to array -->
+                                                    @endif
+                                                @endforeach
+                                                @if ($seance->type_seance == 'team')
+                                                <span>FAD</span>
+                                                @endif
+                                            </td>
+                                        @else
+                                            <td class="cellule border-end border-start border-bottom-0 border-dark bg-grey text-black border-4" id="#{{$modalId_ajouter}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_ajouter}}">
+                                            </td>
+                                        @endif
+                                </tr>
+                                <tr>
+                                    <th class="s border border-top-0 border-bottom-0 border-dark bg-grey text-black border-4">Module</th>
+                                        @php
+                                            $seance = $seances->first(function($item) use ($jour, $seanceorder, $formateur) {
+                                                return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_formateur == $formateur->id;
+                                            });
+                                            $modalId_update = $jour.''. $seanceorder . '' .$formateur->id.'_'."update";
+                                            $modalId_ajouter = $jour.''. $seanceorder . '' .$formateur->id.'_'."ajouter";
+                                        @endphp
+                                        @if($seance)
+                                            <td class="cellule border border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_update}}">
+                                                @if ($seance->module_id)
+                                                    <span class="border border-dark bg-grey text-black">{{$seance->module->intitule}}</span>
+                                                @else
+                                                    <span>M</span>
+                                                @endif
+                                            </td>
+                                        @else
+                                            <td class="cellule border-end border-start border-top-0 border-bottom-0  border-dark bg-grey text-black border-4" id="#{{$modalId_ajouter}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_ajouter}}">
+                                            </td>
+                                        @endif
+                                </tr>
+                                <tr>
+                                    <th class="border-end border-start border-top-0 border-bottom-0 border-dark bg-grey text-black border-4">Salle</th>
+                                        @php
+                                            $seance = $seances->first(function($item) use ($jour, $seanceorder, $formateur) {
+                                                return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_formateur == $formateur->id;
+                                            });
+                                            $modalId_update = $jour.''. $seanceorder . '' .$formateur->id.'_'."update";
+                                            $modalId_ajouter = $jour.''. $seanceorder . '' .$formateur->id.'_'."ajouter";
+                                        @endphp
+                                        @if($seance)
+                                            <td class="cellule border border-dark bg-grey text-black" id="#{{$modalId_update}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_update}}">
+                                                @if ($seance->salle)
+                                                <span>{{ $seance->salle->nom_salle }}</span>
+                                                @else
+                                                    <span>SALLE</span>
+                                                @endif                                        </td>
+                                        @else
+                                            <td class="cellule border-end boredr-start border-top-0 border-dark bg-grey text-black border-4" id="#{{$modalId_ajouter}}" style="background-color: {{ $seance ? 'white' : '' }}; text-align:center;" data-toggle="modal" data-target="#{{$modalId_ajouter}}">
+                                            </td>
+                                        @endif
+                                </tr>
+                            @endforeach
+                            <tr>
+                                <td colspan="3"></td>
+                            </tr>
+                            <tr>
+                                <td colspan="1">Formateur</td>
+                                <td colspan="1">Directeur / Directeur Pédagogique</td>
+                                <td colspan="1">Directeur du Complexe</td>
+                            </tr>
+                            <tr>
+                                <td colspan="1"></td>
+                                <td colspan="1"></td>
+                                <td colspan="1"></td>
+                            </tr>
+                        </table>
+                    @endif
+                @endforeach
+
+                    <table id="salleCDJ" class="table border border-dark border-4">
+                        <!-- CDJ Table content -->
+                        <tr>
+                            <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
+                            @foreach ($seances_order as $seance_order)
+                                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seance_order}}</th>
+                            @endforeach
+                        </tr>
+                        <tr>
+                            <th class="border border-dark bg-grey text-black border-4">JOUR</th>
+                            <th class="border border-dark bg-grey text-black border-4">SALLES</th>
+                        </tr>
+                        <!-- Loop through the days -->
+                        @foreach($jours as $jour)
+                            <!-- Loop through the rooms -->
+                            @php
+                                $sallesCount = count($salles);
+                                $firstsalles = $salles->first();
+                            @endphp
+                            @foreach($salles as $salle)
+                                <tr>
+                                    <!-- For the first room of each day, add the rowspan for the room cell -->
+                                    @if($salle->id === $firstsalles->id && $loop->first)
+                                        <td rowspan="{{ $sallesCount }}" class="border border-dark bg-grey text-black border-4">{{ $jour }}</td>
+                                    @endif
+                                    <td rowspan="1" class="border border-dark bg-grey text-black border-4">{{ $salle['nom_salle'] }}</td>
+
+                                    @foreach ($seances_order as $seance_order)
+                                        @php
+                                            $seances_filtered = $seances->filter(function($item) use ($jour, $seance_order, $salle) {
+                                                return $item->day === $jour && $item->order_seance === $seance_order && $item->id_salle == $salle->id;
+                                            });
+                                        @endphp
+
+                                        <!-- Check if there are sessions for the current criteria -->
+                                        @if ($seances_filtered->isNotEmpty())
+                                            <!-- Get the first session to display formateur and groups -->
+                                            @php
+                                                $seance = $seances_filtered->first();
+                                            @endphp
+                                            <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;">
+                                                <span>{{ $seance->formateur->name }}</span> <br>
+                                                @foreach ($seances_filtered as $seance_group)
+                                                    <span>{{ $seance_group->groupe->nom_groupe }} </span>
+                                                @endforeach
+                                            </td>
+                                        @else
+                                            <!-- If no sessions for the current criteria, display empty cell -->
+                                            <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;"></td>
+                                        @endif
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        @endforeach
+                    </table>
+
+                    <table id="salleCDS" class="table border border-dark border-4">
+                        <!-- CDS Table content -->
+                        <tr>
+                            <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
+                            <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seanceorder}}</th>
+                        </tr>
+                        <tr>
+                            <th class="border border-dark bg-grey text-black border-4">JOUR</th>
+                            <th class="border border-dark bg-grey text-black border-4">GROUPE</th>
+                        </tr>
+                        <!-- Loop through the days -->
+                        @foreach($jours as $jour)
+                        <!-- Loop through the groups -->
+                            @php
+                            $sallesCount = count($salles);
+                            $firstSalle = $salles->first();
+                            @endphp
+                            @foreach($salles as  $salle)
+                                <tr>
+                                    <!-- For the first group of each day, add the rowspan for the day cell -->
+                                    @if($salle->id === $firstSalle->id)
+                                    <td rowspan="{{ $sallesCount }}" class="border border-dark bg-grey text-black border-4">{{ $jour }}</td>
+                                    @endif
+                                    <td rowspan="1" class="border border-dark bg-grey text-black border-4">{{ $salle['nom_salle'] }}</td>
+
+                                    @php
+                                        $seances_filtered = $seances->filter(function($item) use ($jour, $seanceorder, $salle) {
+                                            return $item->day === $jour && $item->order_seance === $seanceorder && $item->id_salle == $salle->id;
+                                        });
+                                    @endphp
+
+                                    <!-- Check if there are sessions for the current criteria -->
+                                    @if ($seances_filtered->isNotEmpty())
+                                        <!-- Get the first session to display formateur and groups -->
+                                        @php
+                                            $seance = $seances_filtered->first();
+                                        @endphp
+                                        <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;">
+                                            <span>{{ $seance->formateur->name }}</span> <br>
+                                            @foreach ($seances_filtered as $seance_group)
+                                                <span>{{ $seance_group->groupe->nom_groupe }} </span>
+                                            @endforeach
+                                        </td>
+                                    @else
+                                        <!-- If no sessions for the current criteria, display empty cell -->
+                                        <td class="v cellule text-black border border-dark" style="background-color: white; text-align:center;"></td>
+                                    @endif
+                                </tr>
+                            @endforeach
+                        @endforeach
+                    </table>
+            </div>
 
         <div class="container">
             <div class="row">
@@ -651,6 +759,7 @@
                 </div>
                 <button class="btn btn-success mb-3" onclick="ExportToExcelAllFormateur('xlsx')">Exporter tous les emplois des formateurs vers Excel</button>
                 <button class="btn btn-success" onclick="emploiTableALLGROUPES('xlsx')">Exporter tous les emplois de tous les groupes de toutes les filières vers Excel</button>
+                <button class="btn btn-success" onclick="ExportToExcelSalle('xlsx')">Export SALLES to excel</button>
             </div>
           </div>
 
@@ -772,5 +881,24 @@
     emploiSelect.addEventListener('change', (event) => {
         form.submit(); // Submit the form when the selection changes
     });
+
+    function ExportToExcelSalle(type, fn, dl) {
+       var wb = XLSX.utils.book_new();
+
+       // CDJ Table export
+       var cdjTable = document.getElementById('salleCDJ');
+       var cdjWS = XLSX.utils.table_to_sheet(cdjTable);
+       XLSX.utils.book_append_sheet(wb, cdjWS, "CDJ");
+
+       // CDS Table export
+       var cdsTable = document.getElementById('salleCDS');
+       var cdsWS = XLSX.utils.table_to_sheet(cdsTable);
+       XLSX.utils.book_append_sheet(wb, cdsWS, "CDS");
+
+       // Save or download
+       return dl ?
+         XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }):
+         XLSX.writeFile(wb, fn || ('Salles.' + (type || 'xlsx')));
+    }
 
 </script>
