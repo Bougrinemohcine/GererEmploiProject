@@ -638,7 +638,18 @@
                         <tr>
                             <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
                             @foreach ($seances_order as $seance_order)
-                                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seance_order}}</th>
+                                @php
+                                    if ($seance_order == 's1') {
+                                        $order_seance = '8H30 à 10H45';
+                                    }elseif ($seance_order == 's2') {
+                                        $order_seance = '11H00 à 13H30';
+                                    }elseif ($seance_order == 's3') {
+                                        $order_seance = '13H30 à 16H00';
+                                    }elseif ($seance_order == 's4') {
+                                        $order_seance = '16H00 à 18H30';
+                                    }
+                                @endphp
+                                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$order_seance}}</th>
                             @endforeach
                         </tr>
                         <tr>
