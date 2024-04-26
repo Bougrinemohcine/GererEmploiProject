@@ -3,7 +3,7 @@
                     <tr>
                         <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
                         @foreach ($seances_order as $seance_order)
-                        @php
+                            @php
                                 if ($seance_order == 's1') {
                                     $order_seance = '8H30 à 10H45';
                                 }elseif ($seance_order == 's2') {
