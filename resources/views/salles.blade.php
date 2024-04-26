@@ -87,7 +87,12 @@
             <!-- CDS Table content -->
             <tr>
                 <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
-                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seanceorder}}</th>
+                            @php
+                                if ($seanceorder == 's5') {
+                                    $order_seance = '19H00 à 21H00';
+                                }
+                            @endphp
+                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$order_seance}}</th>
             </tr>
             <tr>
                 <th class="border border-dark bg-grey text-black border-4">JOUR</th>
