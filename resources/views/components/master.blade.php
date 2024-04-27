@@ -123,7 +123,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-info {{ $path == '/public/index.php/emploi_filiere' ? 'active  bg-gradient-info text-white' : '' }} nav-link-routing" href="{{ route('emploi_filiere') }}">
+                    <a class="nav-link text-info {{ $path == '/emploi_filiere' ? 'active  bg-gradient-info text-white' : '' }} nav-link-routing" href="{{ route('emploi_filiere') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10 text-info"></i>
                         </div>
