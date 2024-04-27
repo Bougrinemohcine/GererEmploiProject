@@ -112,10 +112,10 @@
                     </a>
                 </li>
                 <div class="mt-2 text-center px-3"> <!-- Add 'text-center' class here -->
-                    <a href="{{ route('showBackUp') }}" class="btn  w-100 {{ $path == '/public/index.php/backup' ? 'active  bg-gradient-info w-100 ' : 'border border-info text-info' }}">Back Up</a>
+                    <a href="{{ route('showBackUp') }}" class="btn  w-100 {{ $path == '/backup' ? 'active  bg-gradient-info w-100 ' : 'border border-info text-info' }}">Back Up</a>
                 </div>
                 <li class="nav-item">
-                    <a class="nav-link text-info {{ $path == '/public/index.php/emplois_formateur' ? 'active  bg-gradient-info text-white' : '' }} nav-link-routing" href="{{ route('emploi_formateur') }}">
+                    <a class="nav-link text-info {{ $path == '/emplois_formateur' ? 'active  bg-gradient-info text-white' : '' }} nav-link-routing" href="{{ route('emploi_formateur') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10 text-info"></i>
                         </div>
