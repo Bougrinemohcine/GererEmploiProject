@@ -131,7 +131,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-info {{ $path == '/public/index.php/salles' ? 'active  bg-gradient-info text-white' : '' }} nav-link-routing" href="{{ route('salles') }}">
+                    <a class="nav-link text-info {{ $path == '/salles' ? 'active  bg-gradient-info text-white' : '' }} nav-link-routing" href="{{ route('salles') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10 text-info"></i>
                         </div>
