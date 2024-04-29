@@ -41,25 +41,26 @@
         <form id="filiereForm" action="{{ route('emploi_filiere') }}" method="get">
 
             <select id="selectTypeEmploi" name="TypeEmploi" class="form-select" style="margin-bottom: 10px;" onchange="this.form.submit()">
-                <option value="">Choose a Type</option>
-                    <option value="CDJ" {{'CDJ' == $selectTypeEmploi ? 'selected' : ''}}>CDJ</option>
-                    <option value="CDS" {{'CDS' == $selectTypeEmploi ? 'selected' : ''}}>CDS</option>
+                <option value="" selected disabled>Choose a Type</option>
+                <option value="CDJ" {{ 'CDJ' == $selectTypeEmploi ? 'selected' : '' }}>CDJ</option>
+                <option value="CDS" {{ 'CDS' == $selectTypeEmploi ? 'selected' : '' }}>CDS</option>
             </select>
 
             <select id="selectFiliere" name="filiere_id" class="form-select" style="margin-bottom: 10px;" onchange="this.form.submit()">
-                <option value="">Choose a filiere</option>
+                <option value="" selected disabled>Choose a filiere</option>
                 @foreach($filieres as $filiere)
-                    <option value="{{$filiere->id}}" {{$filiere->id == $selectedFiliereId ? 'selected' : ''}}>{{$filiere->nom_filier}}</option>
+                <option value="{{ $filiere->id }}" {{ $filiere->id == $selectedFiliereId ? 'selected' : '' }}>{{ $filiere->nom_filier }}</option>
                 @endforeach
             </select>
 
             <select id="selectNiveau" name="niveau" class="form-select" style="margin-bottom: 10px;" onchange="this.form.submit()">
-                <option value="">Choose a niveau</option>
+                <option value="" selected disabled>Choose a niveau</option>
                 @foreach($niveaux as $niveau)
-                    <option value="{{$niveau}}" {{$niveau == $selectedNiveauId ? 'selected' : ''}}>{{$niveau}}</option>
+                <option value="{{ $niveau }}" {{ $niveau == $selectedNiveauId ? 'selected' : '' }}>{{ $niveau }}</option>
                 @endforeach
             </select>
         </form>
+
         <style>
             .s{
                 border-bottom: 1px solid black !important;
