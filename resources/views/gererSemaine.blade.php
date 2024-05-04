@@ -20,7 +20,6 @@
                                 <td>{{$emploi->date_fin}}</td>
                                 <td>
                                     <div class="d-flex">
-                                        <a href="#" type="button" class="btn btn-info me-2">Confirmer</a>{{--{{route('showUpdateFormateur',$emploi->id)}}--}}
                                         <form action="{{route('deleteSemaine')}}" method="post">{{--{{route('deleteFormateur',$emploi->id)}}--}}
                                             @csrf
                                             <input type="text" value="{{$emploi->id}}" name="id"hidden>
