@@ -7,7 +7,8 @@
     <div style=" max-height: 85vh;border-radius:10px">
 
         <style>
-            .s{
+            /* Your custom CSS styles */
+            .s {
                 border-bottom: 1px solid black !important;
             }
             .centered-card {
@@ -15,19 +16,21 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                }
+            }
         </style>
 
-        <div class="header text-center">
-            <h3 class=" text-info">Sélectionnez l'emploi souhaité</h3>
-            <form action="{{ route('valideExporterPost') }}" method="POST">
-                @csrf
-                <select name="emploi" id="emploiSelect">  @foreach ($emplois as $emploi)
-                        <option {{$emploi->id == $id_emploi ? 'selected' : ''}} value="{{$emploi->id}}">{{$emploi->date_debu}} - {{$emploi->date_fin}}</option>
-                    @endforeach
-                </select>
-            </form>
-        </div>
+<div class="container">
+    <div class="header text-center mt-3">
+        <h3 class="text-info">Sélectionnez l'emploi souhaité</h3>
+        <form action="{{ route('valideExporterPost') }}" method="POST">
+            @csrf
+            <select name="emploi" id="emploiSelect" class="form-select mt-3">
+                @foreach ($emplois as $emploi)
+                    <option {{$emploi->id == $id_emploi ? 'selected' : ''}} value="{{$emploi->id}}">{{$emploi->date_debu}} - {{$emploi->date_fin}}</option>
+                @endforeach
+            </select>
+        </form>
+    </div>
 
         {{-- emplois par filiere --}}
         <div style="display: none" >
@@ -638,18 +641,7 @@
                         <tr>
                             <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
                             @foreach ($seances_order as $seance_order)
-                                @php
-                                    if ($seance_order == 's1') {
-                                        $order_seance = '8H30 à 10H45';
-                                    }elseif ($seance_order == 's2') {
-                                        $order_seance = '11H00 à 13H30';
-                                    }elseif ($seance_order == 's3') {
-                                        $order_seance = '13H30 à 16H00';
-                                    }elseif ($seance_order == 's4') {
-                                        $order_seance = '16H00 à 18H30';
-                                    }
-                                @endphp
-                                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$order_seance}}</th>
+                                <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seance_order}}</th>
                             @endforeach
                         </tr>
                         <tr>
@@ -704,12 +696,7 @@
                         <!-- CDS Table content -->
                         <tr>
                             <th class="text-black border-4" style="text-align:center" colspan="2">HEURE</th>
-                                @php
-                                    if ($seanceorder == 's5') {
-                                        $order_seance = '19H00 à 21H00';
-                                    }
-                                @endphp
-                            <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$order_seance}}</th>
+                            <th rowspan="2" class="border border-dark bg-grey text-black border-4">{{$seanceorder}}</th>
                         </tr>
                         <tr>
                             <th class="border border-dark bg-grey text-black border-4">JOUR</th>
@@ -756,28 +743,31 @@
                             @endforeach
                         @endforeach
                     </table>
-            </div>
+        </div>
 
-        <div class="container">
-            <div class="row">
+        <div class="row mt-5">
+            <div class="col-md-6">
                 <div class="card mb-3">
-                  <div class="card-body">
-                    <label for="formateurSelect" class="form-label">Select Formateur:</label>
-                    <select class="form-select mb-3" id="formateurSelect" name="formateurId">
-                      <option value="">Select Formateur</option>
-                      <!-- Replace this with your actual loop -->
+                    <div class="card-body">
+                        <label for="formateurSelect" class="form-label">Select Formateur:</label>
+                        <select class="form-select mb-3" id="formateurSelect" name="formateurId">
+                            <option value="">Select Formateur</option>
+                            <!-- Replace this with your actual loop -->
                             @foreach ($formateurs as $formateur)
                                 <option value="{{ $formateur->id }}">{{ $formateur->name }}</option>
                             @endforeach
-                    </select>
-                    <button class="btn btn-success" onclick="exportSingleFormateurToExcel()">Exporter Excel pour le formateur sélectionné</button>
-                  </div>
+                        </select>
+                        <button class="btn btn-success" onclick="exportSingleFormateurToExcel()">Exporter Excel pour le formateur sélectionné</button>
+                    </div>
                 </div>
+            </div>
+            <div class="col-md-6">
                 <button class="btn btn-success mb-3" onclick="ExportToExcelAllFormateur('xlsx')">Exporter tous les emplois des formateurs vers Excel</button>
                 <button class="btn btn-success" onclick="emploiTableALLGROUPES('xlsx')">Exporter tous les emplois de tous les groupes de toutes les filières vers Excel</button>
                 <button class="btn btn-success" onclick="ExportToExcelSalle('xlsx')">Export SALLES to excel</button>
             </div>
-          </div>
+        </div>
+    </div>
 
     </div>
 </x-master>

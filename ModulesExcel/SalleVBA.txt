@@ -1,16 +1,27 @@
-Sub ApplyFormatting()
-       Dim ws As Worksheet
-       For Each ws In ThisWorkbook.Sheets
-           If ws.Name = "CDJ" Then
-               ws.Range("A1:F20").Borders.LineStyle = xlContinuous
-               ws.Range("A1:F20").Borders.Weight = xlThin
-               ws.Range("A1:F20").Borders.ColorIndex = xlAutomatic
-               ws.Range("A1:F20").WrapText = True
-           ElseIf ws.Name = "CDS" Then
-               ws.Range("A1:C20").Borders.LineStyle = xlContinuous
-               ws.Range("A1:C20").Borders.Weight = xlThin
-               ws.Range("A1:C20").Borders.ColorIndex = xlAutomatic
-               ws.Range("A1:C20").WrapText = True
-           End If
-       Next ws
-   End Sub
+Sub FormatSheets()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastColumn As Long
+    
+    ' Loop through each worksheet in the workbook
+    For Each ws In ThisWorkbook.Worksheets
+        ' Check if the sheet name ends with "CDS"
+        If Right(ws.Name, 3) = "CDS" Then
+            ' Auto line break and center for all cells
+            ws.Cells.WrapText = True
+            ws.Cells.VerticalAlignment = xlCenter
+            
+            ' Find the last row and last column with data
+            lastRow = ws.Cells(ws.Rows.Count, "B").End(xlUp).Row
+            lastColumn = ws.Cells(1, ws.Columns.Count).End(xlToLeft).Column
+            
+            ' Apply borders from A1 to the last row in all columns
+            With ws.Range("A1", ws.Cells(lastRow, lastColumn))
+                .Borders.LineStyle = xlContinuous
+                .Borders.Weight = xlThin
+            End With
+        End If
+    Next ws
+    
+    MsgBox "Formatting complete!", vbInformation
+End Sub

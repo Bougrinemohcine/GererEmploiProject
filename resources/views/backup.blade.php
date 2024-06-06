@@ -213,7 +213,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($groupes->where('Mode_de_formation','CDS') as $groupe)
+                            @foreach ($groupes->where('Mode_de_formation','CDJ') as $groupe)
                                 <tr>
                                     <td class="border border-info fs-5 text-black font-weight-bold">{{ $groupe->nom_groupe }}</td>
                                     @foreach ($jours as $jour)
